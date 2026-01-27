@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
+using Journal_App_MAUI.Services;
 
 namespace Journal_App_MAUI
 {
@@ -12,8 +13,12 @@ namespace Journal_App_MAUI
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
+                    fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
                 });
 
+            // Register services
+            builder.Services.AddSingleton<UserService>(); 
+            builder.Services.AddSingleton<JournalService>();
             builder.Services.AddMauiBlazorWebView();
 
 #if DEBUG
