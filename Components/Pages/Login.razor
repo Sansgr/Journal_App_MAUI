@@ -1,0 +1,59 @@
+﻿@page "/login"
+@using Journal_App_MAUI.Services
+@inject Journal_App_MAUI.Services.UserService UserService
+@inject NavigationManager NavigationManager
+
+<div class="auth-card">
+    <h3 class="text-center text-primary mb-4">Login</h3>
+
+    <EditForm Model="@loginUser" OnValidSubmit="HandleLogin">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <InputText @bind-Value="loginUser.Username" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password / PIN</label>
+            <InputText @bind-Value="enteredPasswordOrPin" type="password" class="form-control" />
+        </div>
+
+        <button class="btn btn-primary w-100">Login</button>
+    </EditForm>
+
+    @if (loginFailed)
+    {
+        <div class="alert alert-danger mt-3">Invalid credentials. Please try again.</div>
+    }
+
+    <div class="text-center mt-3">
+        Don’t have an account? <a href="/register">Register</a>
+    </div>
+</div>
+
+@code {
+    private Journal_App_MAUI.Models.User loginUser = new();
+    private string enteredPasswordOrPin = string.Empty;
+    private bool loginFailed = false;
+
+    private async Task HandleLogin()
+    {
+        await UserService.InitializeAsync();
+        var users = await UserService.GetUsersAsync();
+        var match = users.FirstOrDefault(u => u.Username == loginUser.Username);
+
+        if (match != null)
+        {
+            if (PasswordHasher.Verify(enteredPasswordOrPin, match.Password) ||
+                PasswordHasher.Verify(enteredPasswordOrPin, match.Pin))
+            {
+                NavigationManager.NavigateTo("/home");
+                return;
+            }
+        }
+
+        loginFailed = true;
+    }
+}

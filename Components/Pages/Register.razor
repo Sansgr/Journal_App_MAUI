@@ -1,0 +1,63 @@
+﻿@page "/register"
+@using Journal_App_MAUI.Services
+@inject Journal_App_MAUI.Services.UserService UserService
+@inject NavigationManager NavigationManager
+
+<div class="auth-card">
+    <h3 class="text-center text-primary mb-4">Create Account</h3>
+
+    <EditForm Model="@user" OnValidSubmit="HandleRegister">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Username</label>
+            <InputText @bind-Value="user.Username" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Password</label>
+            <InputText @bind-Value="plainPassword" type="password" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Confirm Password</label>
+            <InputText @bind-Value="confirmPassword" type="password" class="form-control" />
+            @if (!string.IsNullOrEmpty(confirmPassword) && confirmPassword != plainPassword)
+            {
+                <div class="text-danger">Passwords do not match</div>
+            }
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">PIN (4 digits)</label>
+            <InputText @bind-Value="plainPin" type="password" class="form-control" />
+        </div>
+
+        <button class="btn btn-success w-100">Register</button>
+    </EditForm>
+
+    <div class="text-center mt-3">
+        Already have an account? <a href="/login">Login</a>
+    </div>
+</div>
+
+@code {
+    private Journal_App_MAUI.Models.User user = new();
+    private string plainPassword = string.Empty;
+    private string confirmPassword = string.Empty;
+    private string plainPin = string.Empty;
+
+    private async Task HandleRegister()
+    {
+        if (plainPassword != confirmPassword) return;
+
+        var salt = PasswordHasher.GenerateSalt();
+        user.Password = PasswordHasher.HashWithSalt(plainPassword, salt);
+        user.Pin = PasswordHasher.HashWithSalt(plainPin, salt);
+
+        await UserService.InitializeAsync();
+        await UserService.SaveUserAsync(user);
+        NavigationManager.NavigateTo("/login");
+    }
+}

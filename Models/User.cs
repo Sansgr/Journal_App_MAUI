@@ -12,15 +12,9 @@ namespace Journal_App_MAUI.Models
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be 3-50 characters")]
         public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Password must be at least 6 characters")]
-        public string Password { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty; // stores salted+hashed password
 
-        [Required]
-        public string PasswordSalt { get; set; } = string.Empty;
-
-        [RegularExpression(@"^\d{4}$", ErrorMessage = "PIN must be 4 digits")]
-        public string? Pin { get; set; }
+        public string Pin { get; set; } = string.Empty; // stores salted+hashed PIN
 
         public DateTime CreatedAt { get; set; } = DateTime.Now;
     }

@@ -1,3 +1,5 @@
 <Solution>
-  <Project Path="Journal_App_MAUI.csproj" />
+  <Project Path="Journal_App_MAUI.csproj">
+    <Deploy Solution="Debug|*" />
+  </Project>
 </Solution>
