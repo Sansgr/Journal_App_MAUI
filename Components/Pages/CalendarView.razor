@@ -1,4 +1,6 @@
 ﻿@page "/calendar"
+@attribute [Authorize]
+@using Microsoft.AspNetCore.Authorization
 @using Journal_App_MAUI.Models
 @using Journal_App_MAUI.Services
 @inject JournalService JournalService

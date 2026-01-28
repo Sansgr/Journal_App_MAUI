@@ -1,0 +1,11 @@
+﻿@page "/logout"
+@inject Journal_App_MAUI.Services.UserService UserService
+@inject NavigationManager NavigationManager
+
+@code {
+    protected override void OnInitialized()
+    {
+        UserService.Logout();
+        NavigationManager.NavigateTo("/login");
+    }
+}

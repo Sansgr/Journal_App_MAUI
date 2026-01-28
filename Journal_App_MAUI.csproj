@@ -58,9 +58,11 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="BlazingComponents.Authentication" Version="29062019.1.0" />
         <PackageReference Include="Blazored.TextEditor" Version="1.1.3" />
         <PackageReference Include="Blazorise" Version="2.0.0-preview2" />
         <PackageReference Include="Markdig" Version="0.44.0" />
+        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="10.0.2" />
         <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
         <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />

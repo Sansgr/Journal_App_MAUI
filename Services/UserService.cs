@@ -5,6 +5,11 @@ namespace Journal_App_MAUI.Services
     public class UserService : DatabaseService
     {
         private bool _initialized;
+        public bool IsLoggedIn { get; private set; }
+        public User? CurrentUser { get; private set; }
+
+        //Notify UI
+        public event Action? OnChange;
 
         public async Task InitializeAsync()
         {
@@ -22,5 +27,21 @@ namespace Journal_App_MAUI.Services
             user.UserId != 0 ? _db.UpdateAsync(user) : _db.InsertAsync(user);
 
         public Task<int> DeleteUserAsync(User user) => _db.DeleteAsync(user);
+
+
+        public void SetLoggedIn(User user)
+        {
+            CurrentUser = user;
+            IsLoggedIn = true;
+            NotifyStateChanged();
+        }
+
+        public void Logout()
+        {
+            CurrentUser = null;
+            IsLoggedIn = false;
+        }
+
+        private void NotifyStateChanged() => OnChange?.Invoke();
     }
 }

@@ -1,4 +1,4 @@
-﻿@page "/login"
+﻿@page "/"
 @using Journal_App_MAUI.Services
 @inject Journal_App_MAUI.Services.UserService UserService
 @inject NavigationManager NavigationManager
@@ -49,7 +49,8 @@
             if (PasswordHasher.Verify(enteredPasswordOrPin, match.Password) ||
                 PasswordHasher.Verify(enteredPasswordOrPin, match.Pin))
             {
-                NavigationManager.NavigateTo("/home");
+                UserService.SetLoggedIn(match);
+                NavigationManager.NavigateTo("/journals");
                 return;
             }
         }

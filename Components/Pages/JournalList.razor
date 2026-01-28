@@ -1,6 +1,8 @@
 ﻿@page "/journals"
+@attribute [Authorize]
 @using Journal_App_MAUI.Models
 @using Journal_App_MAUI.Services
+@using Microsoft.AspNetCore.Authorization
 @inject JournalService JournalService
 
 <h3 class="text-primary mb-4">Journal Entries</h3>
