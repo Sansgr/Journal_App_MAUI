@@ -4,6 +4,7 @@
 @using Journal_App_MAUI.Services
 @using Microsoft.AspNetCore.Authorization
 @inject JournalService JournalService
+@inject IJSRuntime JS
 
 <h3 class="text-primary mb-4">Journal Entries</h3>
 
@@ -77,6 +78,9 @@ else
                 <div class="mt-3">
                     <a class="btn btn-primary btn-sm me-2" href="@($"/journals/edit/{e.EntryId}")">Edit</a>
                     <button class="btn btn-danger btn-sm" @onclick="() => DeleteEntry(e)">Delete</button>
+
+                    <!-- Export PDF button -->
+                    <button class="btn btn-success btn-sm" @onclick="() => ExportEntryPdf(e)">Export PDF</button>
                 </div>
             </div>
         }
@@ -226,4 +230,8 @@ else
         var entryDates = filteredEntries.Select(e => e.EntryDate.Date).ToHashSet();
         missedDays = range.Where(d => !entryDates.Contains(d)).ToList();
     }
+
+    private async Task ExportEntryPdf(JournalEntry entry) =>
+        // Call JS interop to generate PDF for this entry
+        await JS.InvokeVoidAsync("generateSingleJournalPdf", entry);
 }
