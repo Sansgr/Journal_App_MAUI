@@ -34,5 +34,12 @@ namespace Journal_App_MAUI.Services
                .ToListAsync();
 
         public Task<int> DeleteEntryAsync(JournalEntry entry) => _db.DeleteAsync(entry);
+
+        public Task<int> UpdateEntryAsync(JournalEntry entry)
+        {
+            entry.UpdatedAt = DateTime.Now;
+            return _db.UpdateAsync(entry);
+        }
+
     }
 }

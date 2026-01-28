@@ -1,0 +1,76 @@
+﻿@page "/journals/edit/{EntryId:int}"
+@using Journal_App_MAUI.Models
+@using Journal_App_MAUI.Services
+@inject JournalService JournalService
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<h3 class="text-primary mb-4">Edit Journal Entry</h3>
+
+@if (entry == null)
+{
+    <p>Loading entry...</p>
+}
+else
+{
+    <EditForm Model="@entry" OnValidSubmit="SaveChanges">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <InputText @bind-Value="entry.Title" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Content</label>
+            <InputTextArea @bind-Value="entry.Content" class="form-control" rows="6" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Category</label>
+            <InputText @bind-Value="entry.Category" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Primary Mood</label>
+            <InputText @bind-Value="entry.PrimaryMood" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Secondary Mood</label>
+            <InputText @bind-Value="entry.SecondaryMood" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Tags</label>
+            <InputText @bind-Value="entry.Tags" class="form-control" />
+        </div>
+
+        <button class="btn btn-success w-100">Save Changes</button>
+        <button type="button" class="btn btn-secondary w-100 mt-2" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int EntryId { get; set; }
+    private JournalEntry? entry;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JournalService.InitializeAsync();
+        var allEntries = await JournalService.GetAllEntries(1); // Replace with logged-in user ID
+        entry = allEntries.FirstOrDefault(e => e.EntryId == EntryId);
+    }
+
+    private async Task SaveChanges()
+    {
+        if (entry == null) return;
+
+        await JournalService.UpdateEntryAsync(entry);
+        await JS.InvokeVoidAsync("alert", "Journal entry updated successfully!");
+        NavigationManager.NavigateTo("/journals");
+    }
+
+    private void Cancel() => NavigationManager.NavigateTo("/journals");
+}
