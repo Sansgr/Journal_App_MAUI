@@ -6,6 +6,7 @@
 
 <h3 class="text-primary mb-4">Dashboard Analytics & Insights</h3>
 
+<!-- Date Range Filter -->
 <div class="mb-3">
     <label class="form-label">Date Range</label>
     <input type="date" @bind-Value="startDate" @bind-Value:event="onchange" />
@@ -30,9 +31,15 @@ else
 
     <div class="row mt-4">
         <div class="col-md-6">
-            <canvas id="wordTrendChart"></canvas>
+            <canvas id="categoryChart"></canvas>
         </div>
         <div class="col-md-6">
+            <canvas id="wordTrendChart"></canvas>
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <div class="col-md-12">
             <h5>Insights</h5>
             <ul>
                 <li><strong>Most Frequent Mood:</strong> @mostFrequentMood</li>
@@ -73,7 +80,6 @@ else
             ComputeMoodStats();
             ComputeStreaks();
             ComputeMissedDays();
-            ComputeWordTrends();
             await RenderCharts();
         }
     }
@@ -121,11 +127,6 @@ else
         missedDays = range.Where(d => !entryDates.Contains(d)).ToList();
     }
 
-    private void ComputeWordTrends()
-    {
-        // Word count trend is computed in JS chart rendering
-    }
-
     private async Task RenderCharts()
     {
         // Mood Distribution
@@ -136,7 +137,7 @@ else
             moodData.Select(m => m.Mood).ToArray(),
             moodData.Select(m => m.Count).ToArray());
 
-        // Tag Breakdown
+        // Most Used Tags
         var tagData = entries.SelectMany(e => (e.Tags ?? "").Split(',', StringSplitOptions.RemoveEmptyEntries))
             .GroupBy(t => t.Trim())
             .Select(g => new { Tag = g.Key, Count = g.Count() }).ToList();
@@ -144,6 +145,14 @@ else
         await JS.InvokeVoidAsync("renderBarChart", "tagChart",
             tagData.Select(t => t.Tag).ToArray(),
             tagData.Select(t => t.Count).ToArray());
+
+        // Tag Breakdown by Category
+        var categoryData = entries.GroupBy(e => e.Category)
+            .Select(g => new { Category = g.Key, Count = g.Count() }).ToList();
+
+        await JS.InvokeVoidAsync("renderPieChart", "categoryChart",
+            categoryData.Select(c => c.Category).ToArray(),
+            categoryData.Select(c => c.Count).ToArray());
 
         // Word Count Trends
         var wordTrendData = entries.Select(e => new { Date = e.EntryDate.ToShortDateString(), Count = e.WordCount }).ToList();

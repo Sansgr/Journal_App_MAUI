@@ -3,7 +3,7 @@
 @using Journal_App_MAUI.Services
 @using Blazored.TextEditor
 
-<div class="auth-card p-4 shadow-sm">
+<div class="entry-fullpage">
     <h3 class="text-center text-primary mb-4">Add Journal Entry</h3>
 
     <EditForm Model="@entry" OnValidSubmit="SaveEntry">
@@ -19,7 +19,7 @@
 
         <!-- Markdown Content -->
         <div class="mb-4">
-            <label class="block font-semibold mb-1">Content:</label>
+            <label class="form-label fw-bold">Content:</label>
             <!-- Markdown Toolbar -->
             <div class="mb-2 flex space-x-2">
                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("**", "**"))"><b>B</b></button>
@@ -29,7 +29,7 @@
                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("## ", ""))">H2</button>
                 <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("[", "(url)"))">Link</button>
             </div>
-            <InputTextArea class="form-control p-2 border rounded w-full editor" rows="6" @bind-Value="entry.Content" placeholder="Write your journal here..." />
+            <InputTextArea class="form-control p-2 border rounded editor" rows="12" @bind-Value="entry.Content" placeholder="Write your journal here..." />
         </div>
 
         <!-- Category -->
