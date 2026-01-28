@@ -12,7 +12,7 @@
 }
 else if (!entries.Any())
 {
-    <p>No journal entries found. <a href="/add-journal">Add one now</a>.</p>
+    <p>No journal entries found. <a href="/entry">Add one now</a>.</p>
 }
 else
 {
@@ -51,7 +51,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         await JournalService.InitializeAsync();
-        entries = await JournalService.GetAllEntries(1); // Replace with logged-in user ID
+        entries = await JournalService.GetAllEntries(1);
     }
 
     private async Task DeleteEntry(JournalEntry entry)
