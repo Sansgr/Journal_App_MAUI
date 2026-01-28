@@ -21,6 +21,12 @@ namespace Journal_App_MAUI.Models
         [Required(ErrorMessage = "Content is required")]
         public string Content { get; set; } = string.Empty;
 
+        public string Category { get; set; } 
+         public string PrimaryMood { get; set; } 
+        public string SecondaryMood { get; set; } 
+        public string Tags { get; set; }
+
+
         [Required]
         public DateTime EntryDate { get; set; } = DateTime.Today;
 

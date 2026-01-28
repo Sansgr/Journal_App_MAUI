@@ -1,0 +1,159 @@
+﻿@page "/entry"
+@using Journal_App_MAUI.Models
+@using Journal_App_MAUI.Services
+@using Blazored.TextEditor
+
+<div class="auth-card p-4 shadow-sm">
+    <h3 class="text-center text-primary mb-4">Add Journal Entry</h3>
+
+    <EditForm Model="@entry" OnValidSubmit="SaveEntry">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <!-- Title -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Title</label>
+            <InputText @bind-Value="entry.Title" class="form-control" placeholder="Enter title..." />
+            <ValidationMessage For="@(() => entry.Title)" />
+        </div>
+
+        <!-- Markdown Content -->
+        <div class="mb-4">
+            <label class="block font-semibold mb-1">Content:</label>
+            <!-- Markdown Toolbar -->
+            <div class="mb-2 flex space-x-2">
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("**", "**"))"><b>B</b></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("*", "*"))"><i>I</i></button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("- ", ""))">• List</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("# ", ""))">H1</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("## ", ""))">H2</button>
+                <button type="button" class="btn btn-sm btn-outline-secondary" @onclick="@(() => AddMarkdown("[", "(url)"))">Link</button>
+            </div>
+            <InputTextArea class="form-control p-2 border rounded w-full editor" rows="6" @bind-Value="entry.Content" placeholder="Write your journal here..." />
+        </div>
+
+        <!-- Category -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Category</label>
+            <select class="form-select" @bind="entry.Category">
+                <option value="">-- Select Category --</option>
+                <option>Work</option><option>Career</option><option>Studies</option><option>Family</option><option>Friends</option>
+                <option>Relationships</option><option>Health</option><option>Fitness</option><option>Personal Growth</option><option>Self-care</option>
+                <option>Hobbies</option><option>Travel</option><option>Nature</option><option>Finance</option><option>Spirituality</option>
+                <option>Birthday</option><option>Holiday</option><option>Vacation</option><option>Celebration</option><option>Exercise</option>
+                <option>Reading</option><option>Writing</option><option>Cooking</option><option>Meditation</option><option>Yoga</option>
+                <option>Music</option><option>Shopping</option><option>Parenting</option><option>Projects</option><option>Planning</option>
+                <option>Reflection</option>
+            </select>
+        </div>
+
+        <!-- Primary Mood -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Primary Mood</label>
+            <select class="form-select" @bind="entry.PrimaryMood">
+                <option value="">-- Select Mood --</option>
+                <optgroup label="Positive">
+                    <option>Happy</option><option>Excited</option><option>Relaxed</option><option>Grateful</option><option>Confident</option>
+                </optgroup>
+                <optgroup label="Neutral">
+                    <option>Calm</option><option>Thoughtful</option><option>Curious</option><option>Nostalgic</option><option>Bored</option>
+                </optgroup>
+                <optgroup label="Negative">
+                    <option>Sad</option><option>Angry</option><option>Stressed</option><option>Lonely</option><option>Anxious</option>
+                </optgroup>
+            </select>
+        </div>
+
+        <!-- Secondary Mood -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Secondary Mood (Optional)</label>
+            <select class="form-select" @bind="entry.SecondaryMood">
+                <option value="">-- Select Mood --</option>
+                <option>Happy</option><option>Excited</option><option>Relaxed</option><option>Grateful</option><option>Confident</option>
+                <option>Calm</option><option>Thoughtful</option><option>Curious</option><option>Nostalgic</option><option>Bored</option>
+                <option>Sad</option><option>Angry</option><option>Stressed</option><option>Lonely</option><option>Anxious</option>
+            </select>
+        </div>
+
+        <!-- Tags -->
+        <div class="mb-3">
+            <label class="form-label fw-bold">Tags</label>
+            <select class="form-select" @bind="entry.Tags">
+                <option value="">-- Select Category --</option>
+                <option>Work</option>
+                <option>Career</option>
+                <option>Studies</option>
+                <option>Family</option>
+                <option>Friends</option>
+                <option>Relationships</option>
+                <option>Health</option>
+                <option>Fitness</option>
+                <option>Personal Growth</option>
+                <option>Self-care</option>
+                <option>Hobbies</option>
+                <option>Travel</option>
+                <option>Nature</option>
+                <option>Finance</option>
+                <option>Spirituality</option>
+                <option>Birthday</option>
+                <option>Holiday</option>
+                <option>Vacation</option>
+                <option>Celebration</option>
+                <option>Exercise</option>
+                <option>Reading</option>
+                <option>Writing</option>
+                <option>Cooking</option>
+                <option>Meditation</option>
+                <option>Yoga</option>
+                <option>Music</option>
+                <option>Shopping</option>
+                <option>Parenting</option>
+                <option>Projects</option>
+                <option>Planning</option>
+                <option>Reflection</option>
+            </select>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between mt-4">
+            <button class="btn btn-success px-4">Save Entry</button>
+            <button type="button" class="btn btn-secondary px-4" @onclick="Cancel">Cancel</button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+    private JournalEntry entry = new();
+
+    [Inject] IJSRuntime JS { get; set; } = default!;
+    [Inject] JournalService JournalService { get; set; } = default!;
+    [Inject] NavigationManager NavigationManager { get; set; } = default!;
+
+    private async Task SaveEntry()
+    {
+        entry.EntryDate = DateTime.Today;
+        entry.CreatedAt = DateTime.Now;
+        entry.UpdatedAt = DateTime.Now;
+        entry.UserId = 1; // Replace with logged-in user ID
+
+        bool success = await JournalService.AddJournalEntry(entry);
+        if (!success)
+        {
+            await JS.InvokeVoidAsync("alert", "A journal entry for today already exists.");
+            return;
+        }
+
+        await JS.InvokeVoidAsync("alert", "Journal entry saved successfully!");
+        entry = new JournalEntry(); // reset form
+    }
+
+    // Markdown helper
+    void AddMarkdown(string prefix, string suffix)
+    {
+        entry.Content += $"{prefix}{suffix}";
+    }
+
+    private void Cancel() => NavigationManager.NavigateTo("/journals");
+}
+
+
