@@ -162,6 +162,38 @@ body.dark-mode .auth-card {
 }
 
 
+/* site.css */
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+}
+
+.calendar-cell {
+    border: 1px solid #ccc;
+    padding: 8px;
+    text-align: center;
+    min-height: 60px;
+    position: relative;
+}
+
+    .calendar-cell.has-entry {
+        background-color: #e6f7ff;
+        border-color: #007bff;
+    }
+
+.date-number {
+    font-weight: bold;
+}
+
+.entry-link {
+    display: block;
+    margin-top: 4px;
+    font-size: 20px;
+    text-decoration: none;
+}
+
+
 @supports (-webkit-touch-callout: none) {
     .status-bar-safe-area {
         display: flex;

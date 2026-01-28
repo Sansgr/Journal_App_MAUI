@@ -1,0 +1,66 @@
+﻿@page "/calendar"
+@using Journal_App_MAUI.Models
+@using Journal_App_MAUI.Services
+@inject JournalService JournalService
+@inject NavigationManager NavigationManager
+
+<h3 class="text-primary mb-4">Journal Calendar</h3>
+
+@if (entries == null)
+{
+    <p>Loading calendar...</p>
+}
+else
+{
+    <div class="calendar-grid">
+        @foreach (var day in Enumerable.Range(1, DateTime.DaysInMonth(currentMonth.Year, currentMonth.Month)))
+        {
+            var date = new DateTime(currentMonth.Year, currentMonth.Month, day);
+            var entry = entries.FirstOrDefault(e => e.EntryDate.Date == date.Date);
+
+            <div class="calendar-cell @(entry != null ? "has-entry" : "")">
+                <div class="date-number">@day</div>
+                @if (entry != null)
+                {
+                    <a href="@($"/journals/{entry.EntryId}")" class="entry-link">
+                        📓
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="mt-3">
+        <button class="btn btn-secondary me-2" @onclick="PrevMonth">Previous</button>
+        <button class="btn btn-secondary" @onclick="NextMonth">Next</button>
+    </div>
+}
+
+@code {
+    private List<JournalEntry>? entries;
+    private DateTime currentMonth = DateTime.Today;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await JournalService.InitializeAsync();
+        entries = await JournalService.GetAllEntries(1); // Replace with logged-in user ID
+    }
+
+    private async Task LoadEntries()
+    {
+        entries = await JournalService.GetAllEntries(1);
+        StateHasChanged();
+    }
+
+    private async Task PrevMonth()
+    {
+        currentMonth = currentMonth.AddMonths(-1);
+        await LoadEntries();
+    }
+
+    private async Task NextMonth()
+    {
+        currentMonth = currentMonth.AddMonths(1);
+        await LoadEntries();
+    }
+}
