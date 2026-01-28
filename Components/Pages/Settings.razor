@@ -1,0 +1,71 @@
+﻿@page "/settings"
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
+
+<h3 class="text-primary mb-4">Settings</h3>
+
+<div class="card p-3">
+    <!-- Theme Selection -->
+    <div class="mb-3">
+        <label class="form-label">Theme</label>
+        <select class="form-select"
+                @bind-Value="selectedTheme"
+                @bind-Value:event="onchange">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+        </select>
+    </div>
+
+    <!-- Font Size -->
+    <div class="mb-3">
+        <label class="form-label">Font Size</label>
+        <input type="range" min="12" max="24" step="1"
+               @bind-Value="fontSize"
+               @bind-Value:event="oninput" />
+        <span class="ms-2">@fontSize px</span>
+    </div>
+
+    <!-- Default Page -->
+    <div class="mb-3">
+        <label class="form-label">Default Page</label>
+        <select class="form-select"
+                @bind-Value="defaultPage"
+                @bind-Value:event="onchange">
+            <option value="/journals">Journal List</option>
+            <option value="/calendar">Calendar</option>
+            <option value="/add-journal">Add Journal</option>
+        </select>
+    </div>
+
+    <button class="btn btn-success w-100 mt-3" @onclick="SaveSettings">Save Settings</button>
+    <button class="btn btn-secondary w-100 mt-2" @onclick="Cancel">Cancel</button>
+</div>
+
+@code {
+    private string selectedTheme = "light";
+    private int fontSize = 14;
+    private string defaultPage = "/journals";
+
+    private async Task SaveSettings()
+    {
+        // Apply theme using your app.css classes
+        var addClass = selectedTheme == "dark" ? "dark-mode" : "light-mode";
+        var removeClass = selectedTheme == "dark" ? "light-mode" : "dark-mode";
+
+        await JS.InvokeVoidAsync("document.body.classList.add", addClass);
+        await JS.InvokeVoidAsync("document.body.classList.remove", removeClass);
+
+        // Apply font size
+        await JS.InvokeVoidAsync("document.body.style.setProperty", "font-size", $"{fontSize}px");
+
+        // Persist settings
+        await JS.InvokeVoidAsync("localStorage.setItem", "theme", selectedTheme);
+        await JS.InvokeVoidAsync("localStorage.setItem", "fontSize", fontSize.ToString());
+        await JS.InvokeVoidAsync("localStorage.setItem", "defaultPage", defaultPage);
+
+        await JS.InvokeVoidAsync("alert", "Settings saved successfully!");
+        NavigationManager.NavigateTo(defaultPage);
+    }
+
+    private void Cancel() => NavigationManager.NavigateTo("/journals");
+}
